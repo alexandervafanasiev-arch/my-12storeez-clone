@@ -1,14 +1,15 @@
 // 1. НАСТРОЙКИ "АДМИНКИ"
-// Замени ID_ТАБЛИЦЫ на буквы и цифры из твоей ссылки (между /d/ и /edit)
-const SHEET_ID = '1Jm-C7y1Lc7yJ6YM8rRf4y4sUyq7PCblzikvGr9blRTc'; 
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/pub?output=csv`;
+// Просто вставь сюда ВСЮ ссылку, которую ты только что скопировал в Google Таблицах
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7sCs3AKudSo95TBhdWKyvAxUcKqcojmsXxEZgp2Zj5AvwylCZHti_99TZ6rfvHjoz1wXCFD8KFDpr/pubhtml';
 
-// 2. ГЛАВНАЯ ФУНКЦИЯ - ЗАГРУЗКА ТОВАРОВ
 async function loadProducts() {
     try {
         const response = await fetch(SHEET_URL);
-        const data = await response.text();
+        if (!response.ok) throw new Error('Ошибка сети или доступа');
         
+        const data = await response.text();
+
+       
         // Превращаем текст таблицы в строки
         const rows = data.split('\n').slice(1); 
         const grid = document.getElementById('product-grid');
