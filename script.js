@@ -1,10 +1,11 @@
 // 1. Ссылка на твою таблицу
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7sCs3AKudSo95TBhdWKyvAxUcKqcojmsXxEZgp2Zj5AvwylCZHti_99TZ6rfvHjoz1wXCFD8KFDpr/pub?output=csv';
-
-//let cartCount = 0;
+// 1. Глобальные переменные
+//const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1Jm-C7y1Lc7yJ6YM8rRf4y4sUyq7PCblzikvGr9blRTc/pub?output=csv';
 let allProducts = []; 
+let cartCount = 0; // Переменная для счетчика
 
-// 2. Загрузка данных
+// 2. Загрузка данных из Google Таблицы
 async function loadProducts() {
     try {
         const response = await fetch(SHEET_URL);
@@ -24,16 +25,17 @@ async function loadProducts() {
 
         renderProducts(allProducts);
         initSearch();
+        initSort();
         initFilters();
     } catch (e) {
-        console.error("Ошибка:", e);
-        document.getElementById('product-grid').innerHTML = "Ошибка загрузки :(";
+        console.error("Ошибка загрузки:", e);
     }
 }
 
-// 3. Отрисовка карточек
+// 3. Функция отрисовки карточек
 function renderProducts(products) {
     const grid = document.getElementById('product-grid');
+    if (!grid) return;
     grid.innerHTML = '';
     
     products.forEach(p => {
@@ -41,7 +43,7 @@ function renderProducts(products) {
         card.className = 'product-card';
         card.innerHTML = `
             <button class="wishlist-btn">♡</button>
-            <img src="${p.image}" class="product-image">
+            <img src="${p.image}" class="product-image" onerror="this.src='https://via.placeholder.com/400x600?text=No+Image'">
             <h3 class="product-title">${p.title}</h3>
             <p class="product-price">${p.price.toLocaleString()} руб.</p>
             <button class="add-to-cart-btn">В корзину</button>
@@ -49,31 +51,70 @@ function renderProducts(products) {
         grid.appendChild(card);
     });
     
-    // Включаем кнопки после отрисовки
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.onclick = () => btn.textContent = 'Добавлено ✓';
-    });
-    initInteractivity();
+    // ВАЖНО: Прикрепляем события к НОВЫМ кнопкам
+    initInteractivity(); 
 }
 
-// 4. Сортировка
-document.getElementById('sort-select').onchange = (e) => {
-    let sorted = [...allProducts];
-    if (e.target.value === 'low-to-high') sorted.sort((a, b) => a.price - b.price);
-    if (e.target.value === 'high-to-low') sorted.sort((a, b) => b.price - a.price);
-    renderProducts(sorted);
-};
+// 4. Логика кнопок (Счетчик и Галочка)
+function initInteractivity() {
+    const cartCounterElement = document.getElementById('cart-count');
+
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        // Убираем старые события, если они были, и вешаем новое
+        btn.onclick = (e) => {
+            e.preventDefault();
+            
+            // Увеличиваем счетчик
+            cartCount++;
+            if (cartCounterElement) cartCounterElement.textContent = cartCount;
+
+            // Эффект кнопки: меняем текст на галочку
+            btn.textContent = 'Добавлено ✓';
+            btn.classList.add('added'); // Можно добавить стиль в CSS
+
+            // Таймер: через 1.5 секунды возвращаем текст назад
+            setTimeout(() => {
+                btn.textContent = 'В корзину';
+                btn.classList.remove('added');
+            }, 1500); 
+        };
+    });
+
+    // Сердечки
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.onclick = () => {
+            btn.classList.toggle('active');
+            btn.textContent = btn.classList.contains('active') ? '♥' : '♡';
+        };
+    });
+}
 
 // 5. Поиск
 function initSearch() {
-    document.getElementById('product-search').oninput = (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtered = allProducts.filter(p => p.title.toLowerCase().includes(term));
-        renderProducts(filtered);
-    };
+    const searchInput = document.getElementById('product-search');
+    if (searchInput) {
+        searchInput.oninput = (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allProducts.filter(p => p.title.toLowerCase().includes(term));
+            renderProducts(filtered);
+        };
+    }
 }
 
-// 6. Фильтры категорий
+// 6. Сортировка
+function initSort() {
+    const sortSelect = document.getElementById('sort-select');
+    if (sortSelect) {
+        sortSelect.onchange = (e) => {
+            let sorted = [...allProducts];
+            if (e.target.value === 'low-to-high') sorted.sort((a, b) => a.price - b.price);
+            if (e.target.value === 'high-to-low') sorted.sort((a, b) => b.price - a.price);
+            renderProducts(sorted);
+        };
+    }
+}
+
+// 7. Фильтры
 function initFilters() {
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.onclick = () => {
@@ -86,30 +127,5 @@ function initFilters() {
     });
 }
 
-let cartCount = 0; // Переменная для хранения количества товаров
-
-function initInteractivity() {
-    const cartCounterElement = document.getElementById('cart-count');
-
-    // 1. Оживляем кнопки "В корзину"
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.onclick = () => {
-            cartCount++; // Прибавляем 1
-            if (cartCounterElement) cartCounterElement.textContent = cartCount;
-
-            // Эффект нажатия
-            btn.textContent = 'Добавлено ✓';
-            setTimeout(() => { btn.textContent = 'В корзину'; }, 1000);
-        };
-    });
-
-    // 2. Оживляем сердечки
-    document.querySelectorAll('.wishlist-btn').forEach(btn => {
-        btn.onclick = () => {
-            btn.classList.toggle('active');
-            btn.textContent = btn.classList.contains('active') ? '♥' : '♡';
-        };
-    });
-}
-
+// ЗАПУСК
 loadProducts();
