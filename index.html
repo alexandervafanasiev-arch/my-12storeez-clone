@@ -34,7 +34,15 @@
             <input type="text" id="product-search" placeholder="Поиск по коллекции...">
             <span class="search-icon">&#128269;</span>
         </div>
-
+        
+        <div class="sort-container">
+            <label for="sort-select">Сортировать:</label>
+            <select id="sort-select">
+                <option value="default">По умолчанию</option>
+                <option value="low-to-high">Сначала дешевле</option>
+                <option value="high-to-low">Сначала дороже</option>
+            </select>
+        </div>
 
         <div class="filter-menu">
             <button class="filter-btn active" data-filter="all">Все</button>
@@ -45,22 +53,22 @@
 
 
         <section class="product-grid" id="product-grid">
-            
+
         </section>
 
         <section class="newsletter">
-    <div class="newsletter-content">
-        <h2>Подпишитесь на наши новости</h2>
-        <p>Узнавайте о новинках и закрытых распродажах первыми</p>
-        
-        <form id="subscribe-form">
-            <input type="email" id="user-email" placeholder="Ваш e-mail" required>
-            <button type="submit" class="subscribe-btn">Подписаться</button>
-        </form>
-        
-        <p id="subscribe-message" class="hidden"></p>
-    </div>
-</section>
+            <div class="newsletter-content">
+                <h2>Подпишитесь на наши новости</h2>
+                <p>Узнавайте о новинках и закрытых распродажах первыми</p>
+
+                <form id="subscribe-form">
+                    <input type="email" id="user-email" placeholder="Ваш e-mail" required>
+                    <button type="submit" class="subscribe-btn">Подписаться</button>
+                </form>
+
+                <p id="subscribe-message" class="hidden"></p>
+            </div>
+        </section>
     </main>
 
     <div id="modal" class="modal">

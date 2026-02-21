@@ -2,87 +2,144 @@
 // Просто вставь сюда ВСЮ ссылку, которую ты только что скопировал в Google Таблицах
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7sCs3AKudSo95TBhdWKyvAxUcKqcojmsXxEZgp2Zj5AvwylCZHti_99TZ6rfvHjoz1wXCFD8KFDpr/pub?output=csv';
 
+let allProducts = []; // Здесь будем хранить товары из таблицы
+
 async function loadProducts() {
     try {
         const response = await fetch(SHEET_URL);
-        if (!response.ok) throw new Error('Ошибка сети или доступа');
-        
         const data = await response.text();
-        console.log("Данные из таблицы:", data);
+        const rows = data.split('\n').slice(1);
 
-       
-        // Превращаем текст таблицы в строки
-        const rows = data.split('\n').slice(1); 
-        const grid = document.getElementById('product-grid');
-        grid.innerHTML = ''; // Очищаем сетку
+        // Превращаем строки таблицы в массив объектов
+        allProducts = rows.map(row => {
+            const columns = row.split(/[;,]/);
+            return {
+                title: columns[0]?.replace(/"/g, '').trim(),
+                price: parseInt(columns[1]?.replace(/"/g, '').trim()), // Превращаем в число!
+                category: columns[2]?.replace(/"/g, '').trim(),
+                image: columns[3]?.replace(/"/g, '').trim()
+            };
+        }).filter(p => p.title && p.price); // Убираем пустые
 
-        rows.forEach(row => {
-            if (!row.trim()) return; // Пропускаем пустые строки
+        renderProducts(allProducts); // Рисуем товары
+        initSearch();
+    } catch (e) { console.error(e); }
+}
 
-            // Улучшенное разделение: ищем запятую ИЛИ точку с запятой
-            const columns = row.split(/[;,]/); 
-            
-            // Очищаем данные от лишних кавычек и пробелов
-            const title = columns[0]?.replace(/"/g, '').trim();
-            const price = columns[1]?.replace(/"/g, '').trim();
-            const category = columns[2]?.replace(/"/g, '').trim();
-            const image = columns[3]?.replace(/"/g, '').trim();
+// Отдельная функция для отрисовки карточек
+function renderProducts(productsToRender) {
+    const grid = document.getElementById('product-grid');
+    grid.innerHTML = '';
 
-            // Если обязательные поля пусты, не создаем карточку
-            if (!title || !price) return;
+    productsToRender.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.setAttribute('data-category', p.category);
+        card.innerHTML = `
+            <button class="wishlist-btn"><span class="heart-icon">&#9825;</span></button>
+            <img src="${p.image}" alt="${p.title}" class="product-image">
+            <h3 class="product-title">${p.title}</h3>
+            <p class="product-price">${p.price.toLocaleString()} руб.</p>
+            <button class="add-to-cart-btn">В корзину</button>
+        `;
+        grid.appendChild(card);
+    });
+    initInteractivity(); // Включаем кнопки после каждой отрисовки
+}
 
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.setAttribute('data-category', category);
-            
-            card.innerHTML = `
+// Логика переключения сортировки
+document.getElementById('sort-select').addEventListener('change', (e) => {
+    let sorted = [...allProducts]; // Копируем массив
+    const mode = e.target.value;
+
+    if (mode === 'low-to-high') {
+        sorted.sort((a, b) => a.price - b.price); // Математическая сортировка
+    } else if (mode === 'high-to-low') {
+        sorted.sort((a, b) => b.price - a.price);
+    }
+
+    renderProducts(sorted); // Перерисовываем сетку
+});
+try {
+    const response = await fetch(SHEET_URL);
+    if (!response.ok) throw new Error('Ошибка сети или доступа');
+
+    const data = await response.text();
+    console.log("Данные из таблицы:", data);
+
+
+    // Превращаем текст таблицы в строки
+    const rows = data.split('\n').slice(1);
+    const grid = document.getElementById('product-grid');
+    grid.innerHTML = ''; // Очищаем сетку
+
+    rows.forEach(row => {
+        if (!row.trim()) return; // Пропускаем пустые строки
+
+        // Улучшенное разделение: ищем запятую ИЛИ точку с запятой
+        const columns = row.split(/[;,]/);
+
+        // Очищаем данные от лишних кавычек и пробелов
+        const title = columns[0]?.replace(/"/g, '').trim();
+        const price = columns[1]?.replace(/"/g, '').trim();
+        const category = columns[2]?.replace(/"/g, '').trim();
+        const image = columns[3]?.replace(/"/g, '').trim();
+
+        // Если обязательные поля пусты, не создаем карточку
+        if (!title || !price) return;
+
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.setAttribute('data-category', category);
+
+        card.innerHTML = `
                 <button class="wishlist-btn"><span class="heart-icon">&#9825;</span></button>
                 <img src="${image}" alt="${title}" class="product-image">
                 <h3 class="product-title">${title}</h3>
                 <p class="product-price">${price} руб.</p>
                 <button class="add-to-cart-btn">В корзину</button>
             `;
-            
-            grid.appendChild(card);
-        });
 
-        // Функция для настройки поиска
-        function initSearch() {
-                const searchInput = document.getElementById('product-search');
-    
-             // Проверяем, существует ли поле поиска на странице
-             if (!searchInput) return;
-
-         searchInput.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase().trim();
-        const products = document.querySelectorAll('.product-card');
-
-        products.forEach(product => {
-            const title = product.querySelector('.product-title').textContent.toLowerCase();
-            
-            // Если название совпадает С ИЛИ поиск пустой
-            if (title.includes(term)) {
-                product.style.display = "block";
-            } else {
-                product.style.display = "none";
-            }
-        });
+        grid.appendChild(card);
     });
-}
 
-// ВАЖНО: Вызови эту функцию ВНУТРИ loadProducts после того, как товары созданы
-// Найди в своей функции loadProducts строчку initInteractivity();
-// И добавь ПОД НЕЙ:
-// initSearch();
-        // После того как товары созданы, нужно заново "включить" кнопки корзины и сердечки
-        initInteractivity();
-        initSearch();
+    // Функция для настройки поиска
+    function initSearch() {
+        const searchInput = document.getElementById('product-search');
 
+        // Проверяем, существует ли поле поиска на странице
+        if (!searchInput) return;
 
-    } catch (error) {
-        console.error("Ошибка загрузки данных:", error);
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+            const products = document.querySelectorAll('.product-card');
+
+            products.forEach(product => {
+                const title = product.querySelector('.product-title').textContent.toLowerCase();
+
+                // Если название совпадает С ИЛИ поиск пустой
+                if (title.includes(term)) {
+                    product.style.display = "block";
+                } else {
+                    product.style.display = "none";
+                }
+            });
+        });
     }
+
+    // ВАЖНО: Вызови эту функцию ВНУТРИ loadProducts после того, как товары созданы
+    // Найди в своей функции loadProducts строчку initInteractivity();
+    // И добавь ПОД НЕЙ:
+    // initSearch();
+    // После того как товары созданы, нужно заново "включить" кнопки корзины и сердечки
+    initInteractivity();
+    initSearch();
+
+
+} catch (error) {
+    console.error("Ошибка загрузки данных:", error);
 }
+
 
 // 3. ИНТЕРАКТИВ (Корзина, Сердечки, Фильтры)
 function initInteractivity() {
@@ -114,7 +171,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const filterValue = btn.getAttribute('data-filter');
-        
+
         document.querySelectorAll('.product-card').forEach(card => {
             if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
                 card.style.display = "block";
