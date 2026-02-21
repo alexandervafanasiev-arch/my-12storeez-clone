@@ -16,14 +16,20 @@ async function loadProducts() {
         grid.innerHTML = ''; // Очищаем сетку
 
         rows.forEach(row => {
-            // Разделяем колонки (title, price, category, image)
-            const columns = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); 
-            const title = columns[0].replace(/"/g, '');
-            const price = columns[1].replace(/"/g, '');
-            const category = columns[2].replace(/"/g, '');
-            const image = columns[3].replace(/"/g, '');
+            if (!row.trim()) return; // Пропускаем пустые строки
 
-            // Создаем HTML карточки
+            // Улучшенное разделение: ищем запятую ИЛИ точку с запятой
+            const columns = row.split(/[;,]/); 
+            
+            // Очищаем данные от лишних кавычек и пробелов
+            const title = columns[0]?.replace(/"/g, '').trim();
+            const price = columns[1]?.replace(/"/g, '').trim();
+            const category = columns[2]?.replace(/"/g, '').trim();
+            const image = columns[3]?.replace(/"/g, '').trim();
+
+            // Если обязательные поля пусты, не создаем карточку
+            if (!title || !price) return;
+
             const card = document.createElement('div');
             card.className = 'product-card';
             card.setAttribute('data-category', category);
