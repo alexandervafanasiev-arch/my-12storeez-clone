@@ -286,3 +286,31 @@ body {
     color: green;
     font-weight: bold;
 }
+.search-container {
+    max-width: 600px;
+    margin: 20px auto;
+    position: relative;
+    padding: 0 20px;
+}
+
+#product-search {
+    width: 100%;
+    padding: 12px 40px 12px 15px;
+    border: none;
+    border-bottom: 1px solid #ccc; /* Тонкая линия снизу в стиле люкс */
+    outline: none;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+#product-search:focus {
+    border-bottom-color: #000;
+}
+
+.search-icon {
+    position: absolute;
+    right: 35px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
