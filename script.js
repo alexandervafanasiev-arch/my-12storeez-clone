@@ -1,6 +1,6 @@
 // 1. НАСТРОЙКИ "АДМИНКИ"
 // Просто вставь сюда ВСЮ ссылку, которую ты только что скопировал в Google Таблицах
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7sCs3AKudSo95TBhdWKyvAxUcKqcojmsXxEZgp2Zj5AvwylCZHti_99TZ6rfvHjoz1wXCFD8KFDpr/pubhtml';
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7sCs3AKudSo95TBhdWKyvAxUcKqcojmsXxEZgp2Zj5AvwylCZHti_99TZ6rfvHjoz1wXCFD8KFDpr/pub?output=csv';
 
 async function loadProducts() {
     try {
