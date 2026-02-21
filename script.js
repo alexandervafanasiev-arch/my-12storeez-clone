@@ -1,6 +1,7 @@
 // 1. Ссылка на твою таблицу
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7sCs3AKudSo95TBhdWKyvAxUcKqcojmsXxEZgp2Zj5AvwylCZHti_99TZ6rfvHjoz1wXCFD8KFDpr/pub?output=csv';
 
+let cartCount = 0;
 let allProducts = []; 
 
 // 2. Загрузка данных
@@ -52,6 +53,7 @@ function renderProducts(products) {
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.onclick = () => btn.textContent = 'Добавлено ✓';
     });
+    initInteractivity();
 }
 
 // 4. Сортировка
@@ -80,6 +82,32 @@ function initFilters() {
             const category = btn.dataset.filter;
             const filtered = category === 'all' ? allProducts : allProducts.filter(p => p.category === category);
             renderProducts(filtered);
+        };
+    });
+}
+
+//let cartCount = 0; // Переменная для хранения количества товаров
+
+function initInteractivity() {
+    const cartCounterElement = document.getElementById('cart-count');
+
+    // 1. Оживляем кнопки "В корзину"
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.onclick = () => {
+            cartCount++; // Прибавляем 1
+            if (cartCounterElement) cartCounterElement.textContent = cartCount;
+
+            // Эффект нажатия
+            btn.textContent = 'Добавлено ✓';
+            setTimeout(() => { btn.textContent = 'В корзину'; }, 1000);
+        };
+    });
+
+    // 2. Оживляем сердечки
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.onclick = () => {
+            btn.classList.toggle('active');
+            btn.textContent = btn.classList.contains('active') ? '♥' : '♡';
         };
     });
 }
