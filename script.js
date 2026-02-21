@@ -1,45 +1,49 @@
-// 1. НАСТРОЙКИ "АДМИНКИ"
-// Просто вставь сюда ВСЮ ссылку, которую ты только что скопировал в Google Таблицах
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7sCs3AKudSo95TBhdWKyvAxUcKqcojmsXxEZgp2Zj5AvwylCZHti_99TZ6rfvHjoz1wXCFD8KFDpr/pub?output=csv';
+// 1. Глобальные настройки
+const SHEET_ID = '1Jm-C7y1Lc7yJ6YM8rRf4y4sUyq7PCblzikvGr9blRTc'; 
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/pub?output=csv`;
 
-let allProducts = []; // Здесь будем хранить товары из таблицы
+let allProducts = []; // Тот самый массив, который "пропал"
 
+// 2. Главная функция загрузки
 async function loadProducts() {
     try {
         const response = await fetch(SHEET_URL);
         const data = await response.text();
         const rows = data.split('\n').slice(1);
-
-        // Превращаем строки таблицы в массив объектов
+        
         allProducts = rows.map(row => {
             const columns = row.split(/[;,]/);
-
-            // Очищаем цену: убираем пробелы, "руб", "руб." и оставляем только цифры
-            let rawPrice = columns[1]?.replace(/"/g, '').replace(/[^0-9]/g, '');
-            let price = parseInt(rawPrice);
-
+            // Чистим цену от мусора, чтобы сортировка работала
+            const rawPrice = columns[1]?.replace(/"/g, '').replace(/[^0-9]/g, '');
+            
             return {
                 title: columns[0]?.replace(/"/g, '').trim(),
-                price: price || 0, // Если цена не число, ставим 0
+                price: parseInt(rawPrice) || 0,
                 category: columns[2]?.replace(/"/g, '').trim(),
                 image: columns[3]?.replace(/"/g, '').trim()
             };
-        }).filter(p => p.title); // Оставляем товары, у которых есть название
+        }).filter(p => p.title); // Оставляем только реальные товары
 
-        renderProducts(allProducts); // Рисуем товары
-        initSearch();
-    } catch (e) { console.error(e); }
+        console.log("Товары загружены:", allProducts);
+        renderProducts(allProducts); // Рисуем товары первый раз
+        
+    } catch (error) {
+        console.error("Ошибка загрузки:", error);
+    }
 }
 
-// Отдельная функция для отрисовки карточек
+// 3. Функция отрисовки (создает HTML)
 function renderProducts(productsToRender) {
     const grid = document.getElementById('product-grid');
-    grid.innerHTML = '';
+    if (!grid) return;
+    
+    grid.innerHTML = ''; // Очищаем сетку перед новой отрисовкой
 
     productsToRender.forEach(p => {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.setAttribute('data-category', p.category);
+        
         card.innerHTML = `
             <button class="wishlist-btn"><span class="heart-icon">&#9825;</span></button>
             <img src="${p.image}" alt="${p.title}" class="product-image">
@@ -49,118 +53,47 @@ function renderProducts(productsToRender) {
         `;
         grid.appendChild(card);
     });
-    initInteractivity(); // Включаем кнопки после каждой отрисовки
+
+    initInteractivity(); // Включаем кнопки корзины и сердечки
 }
 
-// Логика переключения сортировки
-document.getElementById('sort-select').addEventListener('change', (e) => {
-    let sorted = [...allProducts]; // Копируем массив
-    const mode = e.target.value;
+// 4. Логика СОРТИРОВКИ
+const sortMenu = document.getElementById('sort-select');
+if (sortMenu) {
+    sortMenu.addEventListener('change', (e) => {
+        const mode = e.target.value;
+        let sorted = [...allProducts];
 
-    if (mode === 'low-to-high') {
-        sorted.sort((a, b) => a.price - b.price); // Математическая сортировка
-    } else if (mode === 'high-to-low') {
-        sorted.sort((a, b) => b.price - a.price);
-    }
-
-    renderProducts(sorted); // Перерисовываем сетку
-});
-try {
-    const response = await fetch(SHEET_URL);
-    if (!response.ok) throw new Error('Ошибка сети или доступа');
-
-    const data = await response.text();
-    console.log("Данные из таблицы:", data);
-
-
-    // Превращаем текст таблицы в строки
-    const rows = data.split('\n').slice(1);
-    const grid = document.getElementById('product-grid');
-    grid.innerHTML = ''; // Очищаем сетку
-
-    rows.forEach(row => {
-        if (!row.trim()) return; // Пропускаем пустые строки
-
-        // Улучшенное разделение: ищем запятую ИЛИ точку с запятой
-        const columns = row.split(/[;,]/);
-
-        // Очищаем данные от лишних кавычек и пробелов
-        const title = columns[0]?.replace(/"/g, '').trim();
-        const price = columns[1]?.replace(/"/g, '').trim();
-        const category = columns[2]?.replace(/"/g, '').trim();
-        const image = columns[3]?.replace(/"/g, '').trim();
-
-        // Если обязательные поля пусты, не создаем карточку
-        if (!title || !price) return;
-
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.setAttribute('data-category', category);
-
-        card.innerHTML = `
-                <button class="wishlist-btn"><span class="heart-icon">&#9825;</span></button>
-                <img src="${image}" alt="${title}" class="product-image">
-                <h3 class="product-title">${title}</h3>
-                <p class="product-price">${price} руб.</p>
-                <button class="add-to-cart-btn">В корзину</button>
-            `;
-
-        grid.appendChild(card);
+        if (mode === 'low-to-high') {
+            sorted.sort((a, b) => a.price - b.price);
+        } else if (mode === 'high-to-low') {
+            sorted.sort((a, b) => b.price - a.price);
+        }
+        
+        renderProducts(sorted);
     });
-
-    // Функция для настройки поиска
-    function initSearch() {
-        const searchInput = document.getElementById('product-search');
-
-        // Проверяем, существует ли поле поиска на странице
-        if (!searchInput) return;
-
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase().trim();
-            const products = document.querySelectorAll('.product-card');
-
-            products.forEach(product => {
-                const title = product.querySelector('.product-title').textContent.toLowerCase();
-
-                // Если название совпадает С ИЛИ поиск пустой
-                if (title.includes(term)) {
-                    product.style.display = "block";
-                } else {
-                    product.style.display = "none";
-                }
-            });
-        });
-    }
-
-    // ВАЖНО: Вызови эту функцию ВНУТРИ loadProducts после того, как товары созданы
-    // Найди в своей функции loadProducts строчку initInteractivity();
-    // И добавь ПОД НЕЙ:
-    // initSearch();
-    // После того как товары созданы, нужно заново "включить" кнопки корзины и сердечки
-    initInteractivity();
-    initSearch();
-
-
-} catch (error) {
-    console.error("Ошибка загрузки данных:", error);
 }
 
+// 5. Логика ПОИСКА
+const searchInput = document.getElementById('product-search');
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        // Фильтруем массив данных, а не элементы на странице (так надежнее!)
+        const filtered = allProducts.filter(p => p.title.toLowerCase().includes(term));
+        renderProducts(filtered);
+    });
+}
 
-// 3. ИНТЕРАКТИВ (Корзина, Сердечки, Фильтры)
+// 6. Кнопки КОРЗИНЫ И СЕРДЕЧЕК
 function initInteractivity() {
-    // --- Логика корзины ---
-    let count = 0;
-    const countDisplay = document.getElementById('cart-count');
     document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
         btn.onclick = () => {
-            count++;
-            countDisplay.textContent = count;
             btn.textContent = 'Добавлено ✓';
             setTimeout(() => btn.textContent = 'В корзину', 1000);
         };
     });
 
-    // --- Логика сердечек ---
     document.querySelectorAll('.wishlist-btn').forEach(btn => {
         btn.onclick = () => {
             btn.classList.toggle('active');
@@ -170,22 +103,5 @@ function initInteractivity() {
     });
 }
 
-// 4. ЛОГИКА ФИЛЬТРОВ (Работает всегда)
-document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.onclick = () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const filterValue = btn.getAttribute('data-filter');
-
-        document.querySelectorAll('.product-card').forEach(card => {
-            if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
-                card.style.display = "block";
-            } else {
-                card.style.display = "none";
-            }
-        });
-    };
-});
-
-// Запускаем всё!
+// Запуск!
 loadProducts();
