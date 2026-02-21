@@ -1,134 +1,91 @@
-// 1. Создаем переменную-счетчик. Начинаем с нуля.
-let count = 0;
+// 1. НАСТРОЙКИ "АДМИНКИ"
+// Замени ID_ТАБЛИЦЫ на буквы и цифры из твоей ссылки (между /d/ и /edit)
+const SHEET_ID = '1Jm-C7y1Lc7yJ6YM8rRf4y4sUyq7PCblzikvGr9blRTc'; 
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
 
-// 2. Находим элемент счетчика в шапке по его ID
-const countDisplay = document.getElementById('cart-count');
-
-// 3. Находим все кнопки "В корзину"
-const buttons = document.querySelectorAll('.add-to-cart-btn');
-
-// 4. Вешаем событие на каждую кнопку
-buttons.forEach(button => {
-    button.addEventListener('click', () => {
-        // Увеличиваем значение переменной на 1
-        count = count + 1; 
+// 2. ГЛАВНАЯ ФУНКЦИЯ - ЗАГРУЗКА ТОВАРОВ
+async function loadProducts() {
+    try {
+        const response = await fetch(SHEET_URL);
+        const data = await response.text();
         
-        // Обновляем текст на странице новым значением
-        countDisplay.textContent = count;
+        // Превращаем текст таблицы в строки
+        const rows = data.split('\n').slice(1); 
+        const grid = document.getElementById('product-grid');
+        grid.innerHTML = ''; // Очищаем сетку
 
-        // --- Тот код, который мы писали раньше (эффект кнопки) ---
-        button.textContent = 'Добавлено ✓';
-        button.style.backgroundColor = '#888';
-        
-        setTimeout(() => {
-            button.textContent = 'В корзину';
-            button.style.backgroundColor = '#000';
-        }, 1000);
-    });
-});
+        rows.forEach(row => {
+            // Разделяем колонки (title, price, category, image)
+            const columns = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); 
+            const title = columns[0].replace(/"/g, '');
+            const price = columns[1].replace(/"/g, '');
+            const category = columns[2].replace(/"/g, '');
+            const image = columns[3].replace(/"/g, '');
 
-// Находим элементы модального окна
-const modal = document.getElementById('modal');
-const fullImg = document.getElementById('full-img');
-const closeBtn = document.querySelector('.close');
+            // Создаем HTML карточки
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.setAttribute('data-category', category);
+            
+            card.innerHTML = `
+                <button class="wishlist-btn"><span class="heart-icon">&#9825;</span></button>
+                <img src="${image}" alt="${title}" class="product-image">
+                <h3 class="product-title">${title}</h3>
+                <p class="product-price">${price} руб.</p>
+                <button class="add-to-cart-btn">В корзину</button>
+            `;
+            
+            grid.appendChild(card);
+        });
 
-// Находим все картинки товаров
-const images = document.querySelectorAll('.product-image');
+        // После того как товары созданы, нужно заново "включить" кнопки корзины и сердечки
+        initInteractivity();
 
-// Для каждой картинки добавляем событие клика
-images.forEach(img => {
-    img.addEventListener('click', () => {
-        modal.style.display = "block"; // Показываем окно
-        fullImg.src = img.src; // Копируем адрес картинки, на которую нажали
-    });
-});
-
-// Закрытие при клике на крестик
-closeBtn.onclick = () => {
-    modal.style.display = "none";
-}
-
-// Закрытие при клике на любое место фона
-modal.onclick = (event) => {
-    if (event.target === modal) {
-        modal.style.display = "none";
+    } catch (error) {
+        console.error("Ошибка загрузки данных:", error);
     }
 }
-// Слушаем событие прокрутки (scroll) окна браузера
-window.addEventListener('scroll', () => {
-    const header = document.querySelector('.header');
-    
-    // Если прокрутили больше чем на 50 пикселей вниз
-    if (window.scrollY > 50) {
-        // Добавляем класс .scrolled, который мы описали в CSS
-        header.classList.add('scrolled');
-    } else {
-        // Если вернулись в самое начало — убираем этот класс
-        header.classList.remove('scrolled');
-    }
-});
 
-// Находим все кнопки сердечек
-const wishlistButtons = document.querySelectorAll('.wishlist-btn');
-
-wishlistButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        // Находим внутри кнопки элемент с иконкой
-        const icon = btn.querySelector('.heart-icon');
-        
-        // toggle — это команда "если класс есть — удали, если нет — добавь"
-        btn.classList.toggle('active');
-        
-        // Меняем символ внутри: закрашенное сердце (♥) или пустое (♡)
-        if (btn.classList.contains('active')) {
-            icon.innerHTML = '&#9829;'; // Код закрашенного сердца
-        } else {
-            icon.innerHTML = '&#9825;'; // Код пустого сердца
-        }
+// 3. ИНТЕРАКТИВ (Корзина, Сердечки, Фильтры)
+function initInteractivity() {
+    // --- Логика корзины ---
+    let count = 0;
+    const countDisplay = document.getElementById('cart-count');
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.onclick = () => {
+            count++;
+            countDisplay.textContent = count;
+            btn.textContent = 'Добавлено ✓';
+            setTimeout(() => btn.textContent = 'В корзину', 1000);
+        };
     });
-});
 
-// 1. Находим кнопки и все карточки товаров
-const filterButtons = document.querySelectorAll('.filter-btn');
-const cards = document.querySelectorAll('.product-card');
+    // --- Логика сердечек ---
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        btn.onclick = () => {
+            btn.classList.toggle('active');
+            const icon = btn.querySelector('.heart-icon');
+            icon.innerHTML = btn.classList.contains('active') ? '&#9829;' : '&#9825;';
+        };
+    });
+}
 
-filterButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        // Убираем активный стиль у всех кнопок и даем нажатой
-        filterButtons.forEach(b => b.classList.remove('active'));
+// 4. ЛОГИКА ФИЛЬТРОВ (Работает всегда)
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
         const filterValue = btn.getAttribute('data-filter');
-
-        cards.forEach(card => {
-            // Если выбрано "all" или категория совпадает — показываем
+        
+        document.querySelectorAll('.product-card').forEach(card => {
             if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
                 card.style.display = "block";
             } else {
-                // Иначе — скрываем
                 card.style.display = "none";
             }
         });
-    });
+    };
 });
-// 1. Находим форму и элементы сообщения
-const subscribeForm = document.getElementById('subscribe-form');
-const emailInput = document.getElementById('user-email');
-const subscribeMessage = document.getElementById('subscribe-message');
 
-// 2. Слушаем событие "submit" (отправка формы)
-subscribeForm.addEventListener('submit', (event) => {
-    // ВАЖНО: останавливаем перезагрузку страницы (стандартное поведение браузера)
-    event.preventDefault();
-
-    // Забираем значение из поля ввода
-    const emailValue = emailInput.value;
-
-    // Имитируем отправку на сервер
-    console.log("Email отправлен на сервер:", emailValue);
-
-    // Показываем пользователю, что всё получилось
-    subscribeForm.classList.add('hidden'); // Скрываем саму форму
-    subscribeMessage.textContent = `Спасибо! Мы отправили письмо на ${emailValue}`;
-    subscribeMessage.classList.remove('hidden'); // Показываем сообщение
-});
+// Запускаем всё!
+loadProducts();
