@@ -87,3 +87,27 @@ wishlistButtons.forEach(btn => {
         }
     });
 });
+
+// 1. Находим кнопки и все карточки товаров
+const filterButtons = document.querySelectorAll('.filter-btn');
+const cards = document.querySelectorAll('.product-card');
+
+filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Убираем активный стиль у всех кнопок и даем нажатой
+        filterButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filterValue = btn.getAttribute('data-filter');
+
+        cards.forEach(card => {
+            // Если выбрано "all" или категория совпадает — показываем
+            if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+                card.style.display = "block";
+            } else {
+                // Иначе — скрываем
+                card.style.display = "none";
+            }
+        });
+    });
+});
