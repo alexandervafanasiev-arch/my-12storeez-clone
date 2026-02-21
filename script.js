@@ -46,31 +46,37 @@ async function loadProducts() {
             grid.appendChild(card);
         });
 
-        // После того как товары созданы, нужно заново "включить" кнопки корзины и сердечки
-        initInteractivity();
+        // Функция для настройки поиска
+        function initSearch() {
+                const searchInput = document.getElementById('product-search');
+    
+             // Проверяем, существует ли поле поиска на странице
+             if (!searchInput) return;
 
-        const searchInput = document.getElementById('product-search');
-
-        searchInput.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase(); // Получаем текст поиска в нижнем регистре
+         searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
         const products = document.querySelectorAll('.product-card');
 
         products.forEach(product => {
-        const title = product.querySelector('.product-title').textContent.toLowerCase();
-        
-        // Если название товара содержит поисковое слово — показываем, иначе — скрываем
-        if (title.includes(term)) {
-            product.style.display = "block";
-        } else {
-            product.style.display = "none";
-        }
+            const title = product.querySelector('.product-title').textContent.toLowerCase();
+            
+            // Если название совпадает С ИЛИ поиск пустой
+            if (title.includes(term)) {
+                product.style.display = "block";
+            } else {
+                product.style.display = "none";
+            }
+        });
     });
-});
+}
 
-
-
-
-
+// ВАЖНО: Вызови эту функцию ВНУТРИ loadProducts после того, как товары созданы
+// Найди в своей функции loadProducts строчку initInteractivity();
+// И добавь ПОД НЕЙ:
+// initSearch();
+        // После того как товары созданы, нужно заново "включить" кнопки корзины и сердечки
+        initInteractivity();
+        initSearch();
 
 
     } catch (error) {
