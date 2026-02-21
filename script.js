@@ -49,6 +49,30 @@ async function loadProducts() {
         // После того как товары созданы, нужно заново "включить" кнопки корзины и сердечки
         initInteractivity();
 
+        const searchInput = document.getElementById('product-search');
+
+        searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase(); // Получаем текст поиска в нижнем регистре
+        const products = document.querySelectorAll('.product-card');
+
+        products.forEach(product => {
+        const title = product.querySelector('.product-title').textContent.toLowerCase();
+        
+        // Если название товара содержит поисковое слово — показываем, иначе — скрываем
+        if (title.includes(term)) {
+            product.style.display = "block";
+        } else {
+            product.style.display = "none";
+        }
+    });
+});
+
+
+
+
+
+
+
     } catch (error) {
         console.error("Ошибка загрузки данных:", error);
     }
