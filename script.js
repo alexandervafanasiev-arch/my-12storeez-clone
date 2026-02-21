@@ -13,13 +13,18 @@ async function loadProducts() {
         // Превращаем строки таблицы в массив объектов
         allProducts = rows.map(row => {
             const columns = row.split(/[;,]/);
+
+            // Очищаем цену: убираем пробелы, "руб", "руб." и оставляем только цифры
+            let rawPrice = columns[1]?.replace(/"/g, '').replace(/[^0-9]/g, '');
+            let price = parseInt(rawPrice);
+
             return {
                 title: columns[0]?.replace(/"/g, '').trim(),
-                price: parseInt(columns[1]?.replace(/"/g, '').trim()), // Превращаем в число!
+                price: price || 0, // Если цена не число, ставим 0
                 category: columns[2]?.replace(/"/g, '').trim(),
                 image: columns[3]?.replace(/"/g, '').trim()
             };
-        }).filter(p => p.title && p.price); // Убираем пустые
+        }).filter(p => p.title); // Оставляем товары, у которых есть название
 
         renderProducts(allProducts); // Рисуем товары
         initSearch();
