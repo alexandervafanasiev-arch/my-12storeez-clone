@@ -1,0 +1,216 @@
+/* 1. Общие настройки для всей страницы */
+body {
+    margin: 0; /* Убираем стандартные отступы от краев браузера */
+    font-family: 'Helvetica Neue', Arial, sans-serif; /* Благородный шрифт без засечек */
+    background-color: #fcfcfc; /* Чуть-чуть сероватый белый — выглядит дороже, чем чисто белый */
+    color: #222; /* Почти черный цвет для текста */
+}
+
+/* 2. Шапка (Header) */
+.header {
+    display: flex; /* Технология Flexbox: выстраивает элементы в ряд */
+    justify-content: space-between; /* Расталкивает логотип и меню по разным углам */
+    align-items: center; /* Выравнивает их по центру (по вертикали) */
+    padding: 20px 40px; /* Внутренние отступы: 20px сверху/снизу, 40px сбоку */
+    background: white;
+    border-bottom: 1px solid #eee; /* Тонкая серая полоска, как на сайте-оригинале */
+
+    /* ... твои старые стили (flex, padding и т.д.) ... */
+    
+    position: sticky; /* Магия: шапка "прилипает" к верху */
+    top: 0;           /* Прилипает именно к самому верху экрана */
+    z-index: 100;     /* Чтобы шапка всегда была выше картинок товаров */
+    transition: all 0.4s ease; /* Плавный переход для изменения высоты и цвета */
+    background-color: rgba(255, 255, 255, 1); /* Белый фон (непрозрачный) */
+}
+
+/* Специальный класс, который мы будем добавлять через JavaScript при скролле */
+.header.scrolled {
+    padding: 10px 40px; /* Уменьшаем внутренние отступы (шапка станет уже) */
+    background-color: rgba(255, 255, 255, 0.9); /* Делаем чуть прозрачной */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Добавляем легкую тень снизу */
+}
+
+
+/* Логотип */
+.logo {
+    font-size: 20px;
+    font-weight: 500; /* Жирность текста */
+    letter-spacing: 3px; /* Расстояние между буквами — секрет премиального дизайна */
+    text-transform: uppercase; /* Все буквы делаем заглавными */
+}
+
+/* Меню навигации */
+.navigation a {
+    text-decoration: none; /* Убираем синее подчеркивание у ссылок */
+    color: #666; /* Делаем ссылки серыми */
+    margin-left: 25px; /* Расстояние между словами в меню */
+    font-size: 13px;
+    text-transform: uppercase;
+    transition: 0.3s; /* Плавность при наведении (эффект ИИ-интерфейса) */
+}
+
+/* Эффект при наведении на ссылку */
+.navigation a:hover {
+    color: #000; /* При наведении текст становится черным */
+}
+
+/* 3. Сетка товаров */
+.product-grid {
+    display: grid; /* Включаем "сетку" (Grid) */
+    grid-template-columns: repeat(3, 1fr); /* Создаем 3 колонки одинаковой ширины */
+    gap: 10px; /* Маленький зазор между товарами для чистоты */
+    padding: 40px;
+}
+
+/* Карточка товара */
+.product-card {
+    text-align: center; /* Текст названия и цены — по центру */
+}
+
+/* Место под фото */
+/* Настройки для реальных фотографий */
+.product-image {
+    width: 100%;
+    height: 600px;
+    object-fit: cover; /* Это обрежет фото по краям, чтобы оно идеально вписалось в 600px высоты */
+    display: block;
+    margin-bottom: 15px;
+    background-color: #f9f9f9; /* Если картинка вдруг не подгрузится, будет виден легкий фон */
+}
+
+/* Эффект при наведении на карточку: картинка чуть-чуть увеличится */
+.product-card:hover .product-image {
+    transform: scale(1.02); /* Увеличение на 2% */
+    cursor: pointer; /* Курсор превращается в "ручку" */
+}
+
+/* Стили для текста под фото */
+.product-title {
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.product-price {
+    font-size: 14px;
+    color: #888; /* Серый цвет для цены, чтобы не отвлекать от названия */
+}
+/* Эта строка говорит: "Если ширина экрана меньше или равна 768 пикселей (обычный планшет)..." */
+@media (max-width: 768px) {
+    
+    /* Меняем сетку товаров */
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr); /* Теперь будет 2 колонки вместо 3 */
+        padding: 20px; /* Уменьшаем отступы по бокам, чтобы не тратить место */
+        gap: 15px; /* Чуть увеличим зазор для удобства нажатия пальцем */
+    }
+
+    /* Уменьшаем высоту фото, чтобы на маленьком экране оно не занимало всё пространство */
+    .product-image {
+        height: 400px; 
+    }
+
+    /* Скрываем навигацию (меню), чтобы она не налезала на логотип */
+    /* В реальных сайтах тут появляется иконка "бургер", но пока просто упростим */
+    .navigation {
+        display: none; 
+    }
+}
+
+/* А если это совсем маленький телефон (до 480 пикселей)... */
+@media (max-width: 480px) {
+    .product-grid {
+        grid-template-columns: 1fr; /* Показываем товары строго по одному в ряд */
+    }
+    
+    .product-image {
+        height: 500px; /* Делаем фото крупным и эффектным на весь экран */
+    }
+}
+.add-to-cart-btn {
+    width: 100%; /* Кнопка на всю ширину карточки */
+    padding: 12px;
+    margin-top: 15px;
+    background-color: #000; /* Черный фон */
+    color: #fff; /* Белый текст */
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    transition: background-color 0.3s; /* Плавная смена цвета */
+}
+
+.add-to-cart-btn:hover {
+    background-color: #444; /* При наведении кнопка станет чуть светлее */
+}
+
+.cart-icon {
+    margin-left: 25px;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px solid #000; /* Подчеркивание, чтобы выделить корзину */
+    padding-bottom: 2px;
+}
+
+/* Фоновая подложка */
+.modal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed; /* Зафиксировано на экране */
+    z-index: 1000; /* Поверх всех элементов */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.9); /* Черный цвет с прозрачностью 90% */
+}
+
+/* Картинка внутри окна */
+.modal-content {
+    margin: auto;
+    display: block;
+    max-height: 80%; /* Чтобы не вылезала за пределы экрана */
+    margin-top: 5%;
+}
+
+/* Кнопка закрытия */
+.close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+/* Делаем карточку "главной", чтобы сердечко позиционировалось относительно неё */
+.product-card {
+    position: relative;
+    text-align: center;
+}
+
+.wishlist-btn {
+    position: absolute; /* Магия: вырываем кнопку из потока */
+    top: 15px;          /* Отступ сверху */
+    right: 15px;        /* Отступ справа */
+    background: none;   /* Убираем фон */
+    border: none;       /* Убираем рамку */
+    font-size: 24px;    /* Размер сердечка */
+    cursor: pointer;
+    z-index: 10;        /* Чтобы быть выше картинки */
+    color: #000;
+    transition: transform 0.2s;
+}
+
+/* Эффект увеличения при наведении */
+.wishlist-btn:hover {
+    transform: scale(1.2);
+}
+
+/* Класс для активного (закрашенного) сердечка */
+.wishlist-btn.active {
+    color: #ff4d4d; /* Красный цвет */
+}
