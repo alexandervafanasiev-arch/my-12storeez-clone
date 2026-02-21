@@ -1,85 +1,55 @@
 <!DOCTYPE html>
-
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>12 STOREEZ Clone | Базовый гардероб</title>
-
+    <title>12 STOREEZ CLONE | Коллекция</title>
     <link rel="stylesheet" href="style.css">
-    <nav class="navigation">
-        <a href="#">Новинки</a>
-        <a href="#">Каталог</a>
-        <a href="#">О нас</a>
-        <span class="cart-icon">
-            Корзина (<span id="cart-count">0</span>)
-        </span>
-    </nav>
-
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
-
 <body>
-    <header class="header">
-        <div class="logo">12 CLONE</div>
-        <nav class="navigation">
-            <a href="#">Новинки</a>
-            <a href="#">Каталог</a>
-            <a href="#">О нас</a>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">12 STOREEZ</div>
+            <div class="cart-icon">
+                Корзина (<span id="cart-count">0</span>)
+            </div>
         </nav>
     </header>
 
     <main>
-        <div class="search-container">
-            <input type="text" id="product-search" placeholder="Поиск по коллекции...">
-            <span class="search-icon">&#128269;</span>
-        </div>
-        
-        <div class="sort-container">
-            <label for="sort-select">Сортировать:</label>
-            <select id="sort-select">
-                <option value="default">По умолчанию</option>
-                <option value="low-to-high">Сначала дешевле</option>
-                <option value="high-to-low">Сначала дороже</option>
-            </select>
-        </div>
+        <section class="controls">
+            <div class="search-container">
+                <input type="text" id="product-search" placeholder="Поиск по коллекции...">
+            </div>
 
-        <div class="filter-menu">
+            <div class="sort-container">
+                <label for="sort-select">Сортировать:</label>
+                <select id="sort-select">
+                    <option value="default">По умолчанию</option>
+                    <option value="low-to-high">Сначала дешевле</option>
+                    <option value="high-to-low">Сначала дороже</option>
+                </select>
+            </div>
+        </section>
+
+        <nav class="filter-menu">
             <button class="filter-btn active" data-filter="all">Все</button>
             <button class="filter-btn" data-filter="coat">Пальто</button>
             <button class="filter-btn" data-filter="sweater">Свитера</button>
-            <button class="filter-btn" data-filter="dress">Платья</button>
-        </div>
-
+            <button class="filter-btn" data-filter="shoes">Обувь</button>
+        </nav>
 
         <section class="product-grid" id="product-grid">
-
-        </section>
-
-        <section class="newsletter">
-            <div class="newsletter-content">
-                <h2>Подпишитесь на наши новости</h2>
-                <p>Узнавайте о новинках и закрытых распродажах первыми</p>
-
-                <form id="subscribe-form">
-                    <input type="email" id="user-email" placeholder="Ваш e-mail" required>
-                    <button type="submit" class="subscribe-btn">Подписаться</button>
-                </form>
-
-                <p id="subscribe-message" class="hidden"></p>
-            </div>
+            <div class="loading-message">Загрузка коллекции...</div>
         </section>
     </main>
 
-    <div id="modal" class="modal">
-        <span class="close">&times;</span>
-        <img class="modal-content" id="full-img">
-    </div>
+    <footer>
+        <p>&copy; 2024 12 STOREEZ CLONE. Учебный проект.</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>
-
-</html>
-</body>
-
 </html>

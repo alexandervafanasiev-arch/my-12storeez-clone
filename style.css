@@ -1,124 +1,146 @@
-/* 1. Общие настройки для всей страницы */
-body {
+/* 1. ГЛОБАЛЬНЫЕ СТИЛИ */
+* {
     margin: 0;
-    /* Убираем стандартные отступы от краев браузера */
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    /* Благородный шрифт без засечек */
-    background-color: #fcfcfc;
-    /* Чуть-чуть сероватый белый — выглядит дороже, чем чисто белый */
-    color: #222;
-    /* Почти черный цвет для текста */
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* 2. Шапка (Header) */
-.header {
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #fff;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* 2. ШАПКА И ЛОГОТИП */
+header {
+    padding: 30px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.navbar {
     display: flex;
-    /* Технология Flexbox: выстраивает элементы в ряд */
     justify-content: space-between;
-    /* Расталкивает логотип и меню по разным углам */
     align-items: center;
-    /* Выравнивает их по центру (по вертикали) */
-    padding: 20px 40px;
-    /* Внутренние отступы: 20px сверху/снизу, 40px сбоку */
-    background: white;
-    border-bottom: 1px solid #eee;
-    /* Тонкая серая полоска, как на сайте-оригинале */
-
-    /* ... твои старые стили (flex, padding и т.д.) ... */
-
-    position: sticky;
-    /* Магия: шапка "прилипает" к верху */
-    top: 0;
-    /* Прилипает именно к самому верху экрана */
-    z-index: 100;
-    /* Чтобы шапка всегда была выше картинок товаров */
-    transition: all 0.4s ease;
-    /* Плавный переход для изменения высоты и цвета */
-    background-color: rgba(255, 255, 255, 1);
-    /* Белый фон (непрозрачный) */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-/* Специальный класс, который мы будем добавлять через JavaScript при скролле */
-.header.scrolled {
-    padding: 10px 40px;
-    /* Уменьшаем внутренние отступы (шапка станет уже) */
-    background-color: rgba(255, 255, 255, 0.9);
-    /* Делаем чуть прозрачной */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    /* Добавляем легкую тень снизу */
-}
-
-
-/* Логотип */
 .logo {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 500;
-    /* Жирность текста */
-    letter-spacing: 3px;
-    /* Расстояние между буквами — секрет премиального дизайна */
+    letter-spacing: 4px;
     text-transform: uppercase;
-    /* Все буквы делаем заглавными */
 }
 
-/* Меню навигации */
-.navigation a {
-    text-decoration: none;
-    /* Убираем синее подчеркивание у ссылок */
-    color: #666;
-    /* Делаем ссылки серыми */
-    margin-left: 25px;
-    /* Расстояние между словами в меню */
+.cart-icon {
+    font-size: 14px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+/* 3. БЛОК УПРАВЛЕНИЯ (Поиск и Сортировка) */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 40px auto 20px;
+    padding: 0 20px;
+    gap: 20px;
+}
+
+.search-container {
+    flex: 1;
+    max-width: 400px;
+}
+
+#product-search {
+    width: 100%;
+    padding: 8px 0;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+#product-search:focus {
+    border-bottom-color: #000;
+}
+
+.sort-container {
     font-size: 13px;
+    color: #777;
     text-transform: uppercase;
+}
+
+#sort-select {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    outline: none;
+    border-bottom: 1px solid transparent;
+}
+
+#sort-select:hover {
+    border-bottom-color: #000;
+}
+
+/* 4. ФИЛЬТРЫ */
+.filter-menu {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.filter-btn {
+    background: none;
+    border: none;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    color: #999;
+    padding-bottom: 5px;
+    border-bottom: 1px solid transparent;
     transition: 0.3s;
-    /* Плавность при наведении (эффект ИИ-интерфейса) */
 }
 
-/* Эффект при наведении на ссылку */
-.navigation a:hover {
+.filter-btn.active, .filter-btn:hover {
     color: #000;
-    /* При наведении текст становится черным */
+    border-bottom-color: #000;
 }
 
-/* 3. Сетка товаров */
+/* 5. СЕТКА ТОВАРОВ */
 .product-grid {
     display: grid;
-    /* Включаем "сетку" (Grid) */
-    grid-template-columns: repeat(3, 1fr);
-    /* Создаем 3 колонки одинаковой ширины */
-    gap: 10px;
-    /* Маленький зазор между товарами для чистоты */
-    padding: 40px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto 80px;
+    padding: 0 20px;
 }
 
-/* Карточка товара */
+/* 6. КАРТОЧКА ТОВАРА */
 .product-card {
-    text-align: center;
-    /* Текст названия и цены — по центру */
+    position: relative;
+    text-align: left;
+    transition: transform 0.3s ease;
 }
 
-/* Место под фото */
-/* Настройки для реальных фотографий */
 .product-image {
     width: 100%;
-    height: 600px;
+    height: 400px;
     object-fit: cover;
-    /* Это обрежет фото по краям, чтобы оно идеально вписалось в 600px высоты */
-    display: block;
-    margin-bottom: 15px;
     background-color: #f9f9f9;
-    /* Если картинка вдруг не подгрузится, будет виден легкий фон */
+    margin-bottom: 15px;
 }
 
-/* Эффект при наведении на карточку: картинка чуть-чуть увеличится */
-.product-card:hover .product-image {
-    transform: scale(1.02);
-    /* Увеличение на 2% */
-    cursor: pointer;
-    /* Курсор превращается в "ручку" */
-}
-
-/* Стили для текста под фото */
 .product-title {
     font-size: 14px;
     font-weight: 400;
@@ -128,273 +150,70 @@ body {
 
 .product-price {
     font-size: 14px;
-    color: #888;
-    /* Серый цвет для цены, чтобы не отвлекать от названия */
-}
-
-/* Эта строка говорит: "Если ширина экрана меньше или равна 768 пикселей (обычный планшет)..." */
-@media (max-width: 768px) {
-
-    /* Меняем сетку товаров */
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-        /* Теперь будет 2 колонки вместо 3 */
-        padding: 20px;
-        /* Уменьшаем отступы по бокам, чтобы не тратить место */
-        gap: 15px;
-        /* Чуть увеличим зазор для удобства нажатия пальцем */
-    }
-
-    /* Уменьшаем высоту фото, чтобы на маленьком экране оно не занимало всё пространство */
-    .product-image {
-        height: 400px;
-    }
-
-    /* Скрываем навигацию (меню), чтобы она не налезала на логотип */
-    /* В реальных сайтах тут появляется иконка "бургер", но пока просто упростим */
-    .navigation {
-        display: none;
-    }
-}
-
-/* А если это совсем маленький телефон (до 480 пикселей)... */
-@media (max-width: 480px) {
-    .product-grid {
-        grid-template-columns: 1fr;
-        /* Показываем товары строго по одному в ряд */
-    }
-
-    .product-image {
-        height: 500px;
-        /* Делаем фото крупным и эффектным на весь экран */
-    }
+    color: #555;
+    margin-bottom: 15px;
 }
 
 .add-to-cart-btn {
     width: 100%;
-    /* Кнопка на всю ширину карточки */
     padding: 12px;
-    margin-top: 15px;
     background-color: #000;
-    /* Черный фон */
     color: #fff;
-    /* Белый текст */
     border: none;
     cursor: pointer;
-    text-transform: uppercase;
     font-size: 12px;
+    text-transform: uppercase;
     letter-spacing: 1px;
-    transition: background-color 0.3s;
-    /* Плавная смена цвета */
+    transition: opacity 0.3s;
 }
 
 .add-to-cart-btn:hover {
-    background-color: #444;
-    /* При наведении кнопка станет чуть светлее */
+    opacity: 0.8;
 }
 
-.cart-icon {
-    margin-left: 25px;
-    font-size: 13px;
-    font-weight: bold;
-    text-transform: uppercase;
-    border-bottom: 1px solid #000;
-    /* Подчеркивание, чтобы выделить корзину */
-    padding-bottom: 2px;
-}
-
-/* Фоновая подложка */
-.modal {
-    display: none;
-    /* Скрыто по умолчанию */
-    position: fixed;
-    /* Зафиксировано на экране */
-    z-index: 1000;
-    /* Поверх всех элементов */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    /* Черный цвет с прозрачностью 90% */
-}
-
-/* Картинка внутри окна */
-.modal-content {
-    margin: auto;
-    display: block;
-    max-height: 80%;
-    /* Чтобы не вылезала за пределы экрана */
-    margin-top: 5%;
-}
-
-/* Кнопка закрытия */
-.close {
-    position: absolute;
-    top: 20px;
-    right: 35px;
-    color: #fff;
-    font-size: 40px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* Делаем карточку "главной", чтобы сердечко позиционировалось относительно неё */
-.product-card {
-    position: relative;
-    text-align: center;
-}
-
+/* 7. СЕРДЕЧКИ */
 .wishlist-btn {
     position: absolute;
-    /* Магия: вырываем кнопку из потока */
     top: 15px;
-    /* Отступ сверху */
     right: 15px;
-    /* Отступ справа */
     background: none;
-    /* Убираем фон */
     border: none;
-    /* Убираем рамку */
-    font-size: 24px;
-    /* Размер сердечка */
+    font-size: 20px;
     cursor: pointer;
-    z-index: 10;
-    /* Чтобы быть выше картинки */
-    color: #000;
-    transition: transform 0.2s;
+    z-index: 2;
 }
 
-/* Эффект увеличения при наведении */
-.wishlist-btn:hover {
-    transform: scale(1.2);
-}
-
-/* Класс для активного (закрашенного) сердечка */
 .wishlist-btn.active {
-    color: #ff4d4d;
-    /* Красный цвет */
+    color: #000;
 }
 
-.filter-menu {
+/* 8. АДАПТИВНОСТЬ (Для телефонов) */
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr); /* По 2 товара на мобилках */
+        gap: 20px 10px;
+    }
+
+    .product-image {
+        height: 250px;
+    }
+    
+    .filter-menu {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+}
+
+.loading-message {
     text-align: center;
-    margin: 30px 0;
-}
-
-.filter-btn {
-    background: none;
-    border: 1px solid #eee;
-    padding: 8px 20px;
-    margin: 0 5px;
-    cursor: pointer;
-    font-size: 12px;
-    text-transform: uppercase;
-    transition: 0.3s;
-}
-
-.filter-btn:hover,
-.filter-btn.active {
-    background-color: #000;
-    color: #fff;
-    border-color: #000;
-}
-
-.newsletter {
-    background-color: #f9f9f9;
-    padding: 80px 20px;
-    text-align: center;
-    margin-top: 50px;
-}
-
-.newsletter h2 {
-    font-size: 24px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 10px;
-}
-
-.newsletter p {
-    color: #666;
-    margin-bottom: 25px;
-}
-
-/* Стилизация поля ввода */
-#user-email {
-    padding: 12px;
-    width: 300px;
-    border: 1px solid #ccc;
-    outline: none;
-    /* Убираем стандартную синюю рамку при клике */
-}
-
-.subscribe-btn {
-    padding: 12px 30px;
-    background-color: #000;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: 0.3s;
-}
-
-.subscribe-btn:hover {
-    background-color: #333;
-}
-
-/* Класс для скрытия элементов */
-.hidden {
-    display: none;
-}
-
-#subscribe-message {
-    margin-top: 15px;
-    color: green;
-    font-weight: bold;
-}
-
-.search-container {
-    max-width: 600px;
-    margin: 20px auto;
-    position: relative;
-    padding: 0 20px;
-}
-
-#product-search {
-    width: 100%;
-    padding: 12px 40px 12px 15px;
-    border: none;
-    border-bottom: 1px solid #ccc;
-    /* Тонкая линия снизу в стиле люкс */
-    outline: none;
-    font-size: 16px;
-    transition: border-color 0.3s;
-}
-
-#product-search:focus {
-    border-bottom-color: #000;
-}
-
-.search-icon {
-    position: absolute;
-    right: 35px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #999;
-}
-
-.sort-container {
-    max-width: 600px;
-    margin: 10px auto;
-    text-align: right;
-    padding: 0 20px;
+    grid-column: 1 / -1;
+    padding: 100px 0;
     font-size: 14px;
-}
-
-#sort-select {
-    border: none;
-    background: none;
-    border-bottom: 1px solid #ccc;
-    outline: none;
-    cursor: pointer;
-    padding: 5px;
+    color: #999;
+    text-transform: uppercase;
 }
