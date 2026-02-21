@@ -235,3 +235,54 @@ body {
     color: #fff;
     border-color: #000;
 }
+.newsletter {
+    background-color: #f9f9f9;
+    padding: 80px 20px;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.newsletter h2 {
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.newsletter p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* Стилизация поля ввода */
+#user-email {
+    padding: 12px;
+    width: 300px;
+    border: 1px solid #ccc;
+    outline: none; /* Убираем стандартную синюю рамку при клике */
+}
+
+.subscribe-btn {
+    padding: 12px 30px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+.subscribe-btn:hover {
+    background-color: #333;
+}
+
+/* Класс для скрытия элементов */
+.hidden {
+    display: none;
+}
+
+#subscribe-message {
+    margin-top: 15px;
+    color: green;
+    font-weight: bold;
+}

@@ -111,3 +111,24 @@ filterButtons.forEach(btn => {
         });
     });
 });
+// 1. Находим форму и элементы сообщения
+const subscribeForm = document.getElementById('subscribe-form');
+const emailInput = document.getElementById('user-email');
+const subscribeMessage = document.getElementById('subscribe-message');
+
+// 2. Слушаем событие "submit" (отправка формы)
+subscribeForm.addEventListener('submit', (event) => {
+    // ВАЖНО: останавливаем перезагрузку страницы (стандартное поведение браузера)
+    event.preventDefault();
+
+    // Забираем значение из поля ввода
+    const emailValue = emailInput.value;
+
+    // Имитируем отправку на сервер
+    console.log("Email отправлен на сервер:", emailValue);
+
+    // Показываем пользователю, что всё получилось
+    subscribeForm.classList.add('hidden'); // Скрываем саму форму
+    subscribeMessage.textContent = `Спасибо! Мы отправили письмо на ${emailValue}`;
+    subscribeMessage.classList.remove('hidden'); // Показываем сообщение
+});
