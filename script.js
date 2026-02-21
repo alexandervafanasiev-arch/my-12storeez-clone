@@ -1,7 +1,7 @@
 // 1. Ссылка на твою таблицу
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7sCs3AKudSo95TBhdWKyvAxUcKqcojmsXxEZgp2Zj5AvwylCZHti_99TZ6rfvHjoz1wXCFD8KFDpr/pub?output=csv';
 
-let cartCount = 0;
+//let cartCount = 0;
 let allProducts = []; 
 
 // 2. Загрузка данных
@@ -86,7 +86,7 @@ function initFilters() {
     });
 }
 
-//let cartCount = 0; // Переменная для хранения количества товаров
+let cartCount = 0; // Переменная для хранения количества товаров
 
 function initInteractivity() {
     const cartCounterElement = document.getElementById('cart-count');
