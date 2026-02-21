@@ -8,6 +8,7 @@ async function loadProducts() {
         if (!response.ok) throw new Error('Ошибка сети или доступа');
         
         const data = await response.text();
+        console.log("Данные из таблицы:", data);
 
        
         // Превращаем текст таблицы в строки
